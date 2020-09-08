@@ -9,14 +9,14 @@ The process includes 2 main steps:
 - Torch & TorchVision >= 1.6.0
 ## 1. Installation
 ```
-    git clone https://github.com/nvtu/PlacesCNNTransferLearning
-    cd PlacesCNNTransferLearning
-    git submodule update --init --recursive
-    pip3 install -r requirements.txt
+git clone https://github.com/nvtu/PlacesCNNTransferLearning
+cd PlacesCNNTransferLearning
+git clone https://github.com/nvtu/places365
+pip3 install -r requirements.txt
 ```
 ## 2. Download SHREC'18 2D Scene dataset
 ```
-    wget http://orca.st.usm.edu/~bli/SceneIBR2018/SceneIBR2018_Dataset.zip
+wget http://orca.st.usm.edu/~bli/SceneIBR2018/SceneIBR2018_Dataset.zip
 ```
 Unzip all file in the zip file.
 ## 3. Running Instruction
@@ -26,15 +26,15 @@ Unzip all file in the zip file.
 - MODEL_DIR = /home/nvtu/PlacesCNNTraining/MODEL
 2. Extract placesCNN features:
 ```
-    python3 extract_SHREC_placeCNN_features.py
+python3 extract_SHREC_placeCNN_features.py
 ```
 3. Prepare training data and create h5py file for fast data processing
 ```
-    python3 prepare_placefeat_data.py
+python3 prepare_placefeat_data.py
 ```
 4. Start training
 ```
-    python3 train.py
+python3 train.py
 ```
 --> The best model is saved in MODEL_DIR
 
