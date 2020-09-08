@@ -2,14 +2,14 @@ import os
 import os.path as osp
 from multiprocessing import Pool
 import sys
-current_dir = os.getcwd()
-places365_dir = osp.join(current_dir, 'places365')
+current_dir = osp.dirname(osp.abspath(__file__))
 if not current_dir in sys.path:
     sys.path.append(current_dir)
 from typing import List, Tuple
 from functools import partial
 from places365.run_placesCNN_unified import ExtractPlaceCNNFeatureParams, extract_placeCNN_feature, load_model
 from tqdm import tqdm
+import configparser
 
 
 def create_folder(folder_path):
@@ -17,11 +17,13 @@ def create_folder(folder_path):
         os.makedirs(folder_path)
 
 # Initialize some path paramenters
+config = configparser.ConfigParser()
+config.read('config.ini')
 current_dir = os.getcwd()
-data_dir = '/mnt/DATA/nvtu/SceneIBR2018_Dataset'
+data_dir = config['PATH']['DATA_DIR']
 create_folder(data_dir)
 # Processed data folder path
-processed_data_path = osp.join(current_dir, 'PROCESSED_DATA')
+processed_data_path = config['PATH']['PROCESSED_DATA_DIR']
 create_folder(processed_data_path)
 # Attribute feature and prediction folder
 attribute_folder_path = osp.join(processed_data_path, 'Attributes')
@@ -109,6 +111,7 @@ def generate_input_params(classes_output_path: List[str], images_in_class: List[
             cate_pred_path = image_path.replace(training_data_path, cls_cate_pred_path).replace(image_extension, pred_extension)
             raw_feat_path = image_path.replace(training_data_path, cls_raw_feat_path).replace(image_extension, feat_extension)
             CAMs_path = image_path.replace(training_data_path, cls_CAMs_path)
+
             params = ExtractPlaceCNNFeatureParams(
                 image_file_path = image_path,
                 raw_feat_output_path = raw_feat_path,
@@ -122,6 +125,7 @@ def generate_input_params(classes_output_path: List[str], images_in_class: List[
                 CAMs_output_path = CAMs_path
             )
             input_params.append(params)
+            
     return input_params
 
 
@@ -133,7 +137,5 @@ if __name__ == '__main__':
 
     # Start extracting features
     model = load_model()
-    func = partial(extract_placeCNN_feature, model=model)
-    pool = Pool()
-    for _ in tqdm(pool.imap_unordered(func, input_params), total=total_training_images):
-        pass
+    for input_param in tqdm(input_params):
+        extract_placeCNN_feature(input_param, model)
